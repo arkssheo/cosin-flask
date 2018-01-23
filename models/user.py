@@ -10,9 +10,16 @@ class UserModel(db.Model):
   email = db.Column(db.String(80))
   password = db.Column(db.String(80))
 
-  def __init__(self, email, password):
+  role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+  role = db.relationship('RoleModel')
+
+  def __init__(self, email, password, role_id):
     self.email = email
     self.password = self.hash_password(password)
+    self.role_id = role_id
+
+  def json(self):
+    return {'email': self.email, 'role': self.role.json()}
 
   @classmethod
   def hash_password(cls, password):

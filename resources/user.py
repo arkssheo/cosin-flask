@@ -1,17 +1,36 @@
 from flask_restful import Resource, reqparse
+from flask_jwt import jwt_required
+
 from models.user import UserModel
 
+userparser = reqparse.RequestParser()
+userparser.add_argument('email',
+  type = str,
+  required = True,
+  help = 'email is required'
+)
+
+class User(Resource):
+  parser = userparser.copy()
+
+  @jwt_required()
+  def get(self, email):
+    user = UserModel.find_by_email(email)
+    if user:
+      return user.json()
+    return {'message': 'User with email {} not found'.format(email)}, 404
+
 class UserRegister(Resource):
-  parser = reqparse.RequestParser()
-  parser.add_argument('email',
-    type = str,
-    required = True,
-    help = 'email is required'
-  )
+  parser = userparser.copy()
   parser.add_argument('password',
     type = str,
     required = True,
     help = 'password is required'
+  )
+  parser.add_argument('role_id', 
+    type = int,
+    required = True,
+    help = 'role_id is required'
   )
 
   def post(self):

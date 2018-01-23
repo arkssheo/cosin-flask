@@ -2,7 +2,8 @@ from flask import Flask, render_template
 from flask_restful import Api
 from flask_jwt import JWT
 
-from resources.user import UserRegister
+from resources.user import UserRegister, User
+from resources.role import Role
 
 from security import authenticate, identity
 
@@ -27,6 +28,8 @@ def home():
   return render_template('index.html')
 
 api.add_resource(UserRegister, '/register')
+api.add_resource(Role, '/role/<string:name>')
+api.add_resource(User, '/user/<string:email>')
 
 if __name__ == '__main__':
   from db import db
