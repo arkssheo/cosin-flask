@@ -13,7 +13,7 @@ userparser.add_argument('email',
 class User(Resource):
   parser = userparser.copy()
 
-  @jwt_required()
+  #@jwt_required()
   def get(self, email):
     user = UserModel.find_by_email(email)
     if user:
