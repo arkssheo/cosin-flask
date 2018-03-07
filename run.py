@@ -1,4 +1,4 @@
-from app import app
+from server import app
 from db import db
 
 db.init_app(app)
@@ -7,13 +7,12 @@ db.init_app(app)
 def create_tables():
   db.create_all() 
 
-# FLASK_APP=server.py flask resetdb
+# FLASK_APP=run.py flask resetdb
 @app.cli.command('resetdb')
 def resetdb_command():
     """Destroys and creates the database + tables."""
     from models.user import UserModel
     from models.role import RoleModel
-    db.init_app(app)
 
     from sqlalchemy_utils import database_exists, create_database, drop_database
     if database_exists(DB_URL):
