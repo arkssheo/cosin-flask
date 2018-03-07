@@ -1,3 +1,4 @@
+import click
 from flask import Flask, render_template, request, jsonify
 from flask_restful import Api
 from flask_cors import CORS, cross_origin
@@ -14,7 +15,16 @@ from security import authenticate, identity
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+
+POSTGRES_URL="127.0.0.1:5432"
+POSTGRES_USER="postgres"
+POSTGRES_PW="password123"
+POSTGRES_DB="cosin-flask"
+
+DB_URL = 'postgresql+psycopg2://{user}:{pw}@{url}/{db}'.format(user=POSTGRES_USER,pw=POSTGRES_PW,url=POSTGRES_URL,db=POSTGRES_DB)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = DB_URL
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 
 # Setup the Flask-JWT-Extended extension
 app.config['JWT_SECRET_KEY'] = 'super-secret2'  # Change this!
@@ -36,6 +46,38 @@ def create_tables():
 @app.route('/')
 def home():
   return render_template('index.html')
+
+# FLASK_APP=server.py flask resetdb
+@app.cli.command('resetdb')
+def resetdb_command():
+    """Destroys and creates the database + tables."""
+    from db import db
+    from models.user import UserModel
+    from models.role import RoleModel
+    db.init_app(app)
+
+    from sqlalchemy_utils import database_exists, create_database, drop_database
+    if database_exists(DB_URL):
+        print('Deleting database.')
+        drop_database(DB_URL)
+    if not database_exists(DB_URL):
+        print('Creating database.')
+        create_database(DB_URL)
+
+    print('Creating tables.')
+    db.create_all()
+
+    print('Adding role: Admin')
+    admin_role = RoleModel('Administrador', True)
+    db.session.add(admin_role)
+    db.session.commit()
+
+    print('Adding Admin user')
+    admin = UserModel('admin@cosin.com.mx', 'adminpassword', '1')
+    db.session.add(admin)
+    db.session.commit()
+
+    print('Done!')
 
 @app.route('/login', methods=['POST'])
 def login():
