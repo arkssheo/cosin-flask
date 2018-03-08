@@ -1,8 +1,12 @@
 """Destroys and creates the database + tables."""
+import os
 from models.user import UserModel
 from models.role import RoleModel
-from db import db
 from sqlalchemy_utils import database_exists, create_database, drop_database
+from server import app
+from db import db
+
+db.init_app(app)
 
 if database_exists(DB_URL):
     print('Deleting database.')
