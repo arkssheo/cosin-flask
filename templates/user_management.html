@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>User Management</title>
+  </head>
+  <body>
+    <header>
+      <h1>User Management</h1>
+    </header>
+    <section>
+      {{ user.json() }}
+      <form class="" action="{{ url_for('admin_user', email=user.email, password=user.password) }}" method="post">
+        <input type="password" name="password" value="" placeholder="new password">
+        <button type="submit" name="button">Change Password</button>
+      </form>
+      {% if message %}
+        <p>{{ message }}</p>
+      {% endif %}
+    </section>
+    <footer></footer>
+  </body>
+</html>

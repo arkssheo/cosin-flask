@@ -35,6 +35,15 @@ class UserModel(db.Model):
   def find_by_id(cls, _id):
     return cls.query.filter_by(id = _id).first()
 
+  @classmethod
+  def get_all(cls):
+    return cls.query.all()
+
+  def reset_password(self, new_password):
+    self.password = self.hash_password(new_password)
+    db.session.add(self)
+    db.session.commit()
+
   def save(self):
     db.session.add(self)
     db.session.commit()
@@ -42,4 +51,3 @@ class UserModel(db.Model):
   def delete(self):
     db.session.delete(self)
     db.session.commit()
-

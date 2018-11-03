@@ -13,8 +13,12 @@ def resetdb_command():
     """Destroys and creates the database + tables."""
     from models.user import UserModel
     from models.role import RoleModel
+    import os
 
     from sqlalchemy_utils import database_exists, create_database, drop_database
+
+    DB_URL = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
+
     if database_exists(DB_URL):
         print('Deleting database.')
         drop_database(DB_URL)

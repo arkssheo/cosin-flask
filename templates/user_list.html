@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>User List</title>
+  </head>
+  <body>
+    <section>
+      <p>Current Users:</p>
+      <ul>
+        {% for user in users %}
+        <li>{{ user.id }} - {{ user.json() }} <a href="{{ url_for('admin_user', email=user.email) }}">[Manage]</a></li>
+        {% endfor %}
+      </ul>
+    </section>
+  </body>
+</html>

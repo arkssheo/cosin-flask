@@ -1,5 +1,5 @@
 import click, os
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, Blueprint
 from flask_restful import Api
 from flask_cors import CORS, cross_origin
 from flask_jwt_extended import (
@@ -9,6 +9,8 @@ from flask_jwt_extended import (
 
 from resources.user import UserRegister, User
 from resources.role import Role
+
+from models.user import UserModel
 
 from security import authenticate, identity
 
@@ -27,7 +29,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 #     url = POSTGRES_URL,
 #     db = POSTGRES_DB)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///data.db') 
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
 # app.config['SQLALCHEMY_DATABASE_URI'] = DB_URL
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 
@@ -46,6 +48,25 @@ api = Api(app)
 @app.route('/')
 def home():
   return render_template('index.html')
+
+@app.route('/admin/users')
+def admin_users():
+    if request.method == 'GET':
+        users = UserModel.query.all()
+        return render_template('user_list.html', users=users)
+
+@app.route('/admin/user', methods=['GET', 'POST'])
+def admin_user():
+    if request.method == 'GET':
+        email = request.args.get('email')
+        user = UserModel.find_by_email(email)
+        return render_template('user_management.html', user=user)
+    elif request.method == 'POST':
+        email = request.args.get('email')
+        password = request.args.get('password')
+        user = UserModel.find_by_email(email)
+        user.reset_password(password)
+        return render_template('user_management.html', user=user, message='Password Changed!')
 
 @app.route('/login', methods=['POST'])
 def login():

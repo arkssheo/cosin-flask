@@ -8,6 +8,8 @@ from db import db
 
 db.init_app(app)
 
+DB_URL = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
+
 if database_exists(DB_URL):
     print('Deleting database.')
     drop_database(DB_URL)
