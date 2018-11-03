@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}New Role{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <label for="role_name">Role Name</label>
+    <input name="role_name" id="role_name" required><br>
+    <input type="checkbox" name="is_admin" id="is_admin">
+    <label for="is_admin">is admin</label>
+    <input type="submit" value="Add New">
+  </form>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Register{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <label for="email">Email</label>
+    <input name="email" id="email" required>
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" required>
+    <label for="role_id">Role:</label>
+    <select class="" name="role_id">
+      <option value="-1" disabled selected>Select one...</option>
+      {%  for role in roles %}
+        <option value="{{ role.id }}">{{ role.role_name }}{% if role.is_admin %}*{% endif %}</option>
+      {% endfor %}
+    </select>
+    <input type="submit" value="Register">
+  </form>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Manage role{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <p>{{ role.json() }}</p>
+  <form class="" action="{{ url_for('admin_delete_role') }}" method="post">
+    <input type="text" name="role_name" value="{{ role.role_name }}">
+    <button type="submit" name="button">Delete</button>
+  </form>
+{% endblock %}

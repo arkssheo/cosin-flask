@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Admin Control Panel{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <section>
+    <p>Role List:</p>
+    <ul>
+      {% for role in roles %}
+        <li>{{ role.json() }} <a href="{{ url_for('admin_role', role_name=role.role_name) }}">[Manage]</a></li>
+      {% endfor %}
+    </ul>
+    <p><a href="{{ url_for('admin_new_role') }}">Add Role</a></p>
+  </section>
+
+  <section>
+    <p>User List:</p>
+    <ul>
+      {% for user in users %}
+      <li>{{ user.id }} - {{ user.json() }} <a href="{{ url_for('admin_user', email=user.email) }}">[Manage]</a></li>
+      {% endfor %}
+    </ul>
+    <a href="{{ url_for('admin_register') }}">Register User</a>
+  </section>
+{% endblock %}

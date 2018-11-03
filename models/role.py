@@ -20,7 +20,6 @@ class RoleModel(db.Model):
 
   @classmethod
   def find_by_name(cls, role_name):
-    print('blowing up here...')
     return cls.query.filter_by(role_name = role_name).first()
 
   def save(self):

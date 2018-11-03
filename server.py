@@ -1,5 +1,5 @@
 import click, os
-from flask import Flask, render_template, request, jsonify, Blueprint
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_restful import Api
 from flask_cors import CORS, cross_origin
 from flask_jwt_extended import (
@@ -11,6 +11,7 @@ from resources.user import UserRegister, User
 from resources.role import Role
 
 from models.user import UserModel
+from models.role import RoleModel
 
 from security import authenticate, identity
 
@@ -49,11 +50,12 @@ api = Api(app)
 def home():
   return render_template('index.html')
 
-@app.route('/admin/users')
-def admin_users():
-    if request.method == 'GET':
-        users = UserModel.query.all()
-        return render_template('user_list.html', users=users)
+@app.route('/admin')
+def admin_cp():
+    users = UserModel.query.all()
+    roles = RoleModel.query.all()
+    return render_template('admin_cp.html', users=users, roles=roles)
+
 
 @app.route('/admin/user', methods=['GET', 'POST'])
 def admin_user():
@@ -67,6 +69,60 @@ def admin_user():
         user = UserModel.find_by_email(email)
         user.reset_password(password)
         return render_template('user_management.html', user=user, message='Password Changed!')
+
+@app.route('/admin/register', methods=['GET', 'POST'])
+def admin_register():
+    if request.method == 'POST':
+        user = UserModel(**request.form)
+        user.save()
+        return redirect( url_for('admin_cp') )
+    else:
+        roles = RoleModel.query.all()
+        return render_template('register.html', roles=roles)
+
+@app.route('/admin/delete_user', methods=['POST'])
+def admin_delete_user():
+    user = UserModel.find_by_email(request.form.get('email', ''))
+    if user is not None:
+        user.delete()
+        return redirect( url_for('admin_cp') )
+
+@app.route('/admin/role', methods=['GET', 'POST'])
+def admin_role():
+    if request.method == 'POST':
+        pass
+    else:
+        role_name = request.args.get('role_name')
+        role = RoleModel.find_by_name(role_name)
+        return render_template('role_mgmt.html', role=role)
+
+@app.route('/admin/new_role', methods=['GET', 'POST'])
+def admin_new_role():
+    if request.method == 'POST':
+        is_admin = False if request.form.get('is_admin', None) is None else True
+        role_name = request.form.get('role_name', None)
+
+        if role_name is None:
+            return render_template('new_role.html')
+
+        role = RoleModel(role_name=role_name, is_admin=is_admin)
+        role.save()
+        return redirect( url_for('admin_cp') )
+    else:
+        return render_template('new_role.html')
+
+@app.route('/admin/delete_role', methods=['POST'])
+def admin_delete_role():
+    role = RoleModel.find_by_name(request.form.get('role_name', ''))
+    if role is not None:
+        role.delete()
+    else:
+        print('[DELETE ROLE] Could not delete role with name: %s' % request.form.get('role_name'))
+
+    return redirect( url_for('admin_cp') )
+
+
+""" API Methods """
 
 @app.route('/login', methods=['POST'])
 def login():
