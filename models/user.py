@@ -23,6 +23,9 @@ class UserModel(db.Model):
 
   @classmethod
   def hash_password(cls, password):
+    if not isinstance(password, str):
+        password = str(password)
+    print('hashing: %s' % password)
     bytes_object = bytes(password, encoding = 'utf-8')
     hash_object = hashlib.sha1(bytes_object)
     return hash_object.hexdigest()
