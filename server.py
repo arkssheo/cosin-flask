@@ -1,5 +1,5 @@
 import click, os
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, abort
 from flask_restful import Api
 from flask_cors import CORS, cross_origin
 from flask_jwt_extended import (
@@ -73,7 +73,13 @@ def admin_user():
 @app.route('/admin/register', methods=['GET', 'POST'])
 def admin_register():
     if request.method == 'POST':
-        user = UserModel(**request.form)
+        email = request.form.get('email', None)
+        password = request.form.get('password', None)
+        role_id = request.form.get('role_id', None)
+        if email is None or password is None or role_id is None:
+            print('Got: %s %s %s' % email, password, role_id)
+            return abort(404)
+        user = UserModel(email=email, password=password, role_id=role_id)
         user.save()
         return redirect( url_for('admin_cp') )
     else:
