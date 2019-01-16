@@ -154,7 +154,27 @@ def login():
 @app.route('/api/roles', methods=['GET'])
 def api_roles():
     roles = RoleModel.query.all()
-    return jsonify({"roles": roles}), 200
+    return jsonify({"roles": [role.json() for role in roles]}), 200
+
+@app.route('/api/create_user', methods=['POST'])
+def api_create_user():
+    if not request.is_json:
+        return jsonify({"message": "Missing JSON in request"}), 400
+
+    email = request.json.get('email', None)
+    password = request.json.get('password', None)
+    role_id = request.json.get('roleId', None)
+    if email is None or password is None or role_id is None:
+        print('Error creating user, email(%s), password(%s), role_id(%s)' % (email, password, role_id))
+        return jsonify({"message": "Missing parameters, need email, password and role_id"}), 400
+
+    role = RoleModel.query.get(role_id)
+    if role is None:
+        return jsonify({"message": "Invalid role id"}), 400
+
+    user = UserModel(email=email, password=password, role_id=role_id)
+    user.save()
+    return jsonify({"message": "User created successfully!"}), 201
 
 api.add_resource(UserRegister, '/register')
 api.add_resource(Role, '/role/<string:name>')

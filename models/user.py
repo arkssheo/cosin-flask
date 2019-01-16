@@ -19,6 +19,8 @@ class UserModel(db.Model):
     self.role_id = role_id
 
   def json(self):
+    if self.role is None:
+        return {'email': self.email, 'role': self.role_id}
     return {'email': self.email, 'role': self.role.json()}
 
   @classmethod

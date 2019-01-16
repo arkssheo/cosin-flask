@@ -12,7 +12,7 @@ class RoleModel(db.Model):
     self.is_admin = is_admin
 
   def json(self):
-    return {'name': self.role_name, 'admin': self.is_admin}
+    return {'_id': self.id, 'name': self.role_name, 'is_admin': self.is_admin}
 
   @classmethod
   def find_by_id(cls, _id):
