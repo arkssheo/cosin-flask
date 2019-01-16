@@ -130,7 +130,7 @@ def admin_delete_role():
 
 """ API Methods """
 
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     if not request.is_json:
         return jsonify({"message": "Missing JSON in request"}), 400
@@ -150,6 +150,11 @@ def login():
     # Identity can be any data that is json serializable
     access_token = create_access_token(identity = email)
     return jsonify(access_token = access_token, user = user.json()), 200
+
+@app.route('/api/roles', methods=['GET'])
+def api_roles():
+    roles = RoleModel.query.all()
+    return jsonify({"roles": roles}), 200
 
 api.add_resource(UserRegister, '/register')
 api.add_resource(Role, '/role/<string:name>')
